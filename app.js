@@ -13,17 +13,21 @@ mongoose.connect('mongodb://127.0.0.1:27017/puc')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:false}))
-app.use(logger('combined'))
+app.use(logger('dev'))
 
-app.get('/user',userController.index)
-app.post('/user',userController.create)
-app.put('/user/:userId',userController.update)
-app.delete('/user/:userId',userController.delete)
+app.get('/', function(req, res){
+  res.end('nothing to see here')
+})
 
-app.get('/session',sessionController.index)
-app.post('/session',sessionController.create)
-app.put('/session/:sessionId',sessionController.update)
-app.delete('/session/:sessionId',sessionController.delete)
+app.get('/users',userController.index)
+app.post('/users',userController.create)
+app.put('/users/:userId',userController.update)
+app.delete('/users/:userId',userController.delete)
+
+app.get('/sessions',sessionController.index)
+app.post('/sessions',sessionController.create)
+app.put('/sessions/:sessionId',sessionController.update)
+app.delete('/sessions/:sessionId',sessionController.delete)
 
 app.listen(port,function(err) {
     console.log('listening on %s',port)

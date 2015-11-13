@@ -4,23 +4,23 @@ var mongoose = require("mongoose"),
 
 controller.index = [
     function(req, res) {
-        res.end("Node-Android-Chat-Project");
+        res.end("PlaceHolder");
     }
 ]
 
 controller.create = [
     function(req, res) {
-        res.end("Node-Android-Chat-Project");
+        res.end("PlaceHolder");
     }
 ]
 controller.update = [
     function(req, res) {
-        res.end("Node-Android-Chat-Project");
+        res.end("PlaceHolder");
     }
 ]
 controller.delete = [
     function(req, res) {
-        res.end("Node-Android-Chat-Project");
+        res.end("PlaceHolder");
     }
 ]
 
