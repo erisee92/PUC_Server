@@ -39,7 +39,8 @@ controller.create = [
                 newuser.save(function(err) {
                     if (err) return next(err)
                     res.json({
-                        'response': "Sucessfully Registered"
+                        'response': "Sucessfully Registered",
+                        'id': newuser._id
                     })
                 })
             }
@@ -57,8 +58,22 @@ controller.update = [
     }
 ]
 controller.delete = [
-    function(req, res) {
-        res.end("PlaceHolder")
+    function(req, res, next) {
+
+        User.remove({ _id: req.params.userId }, function(err, user) {
+            if (err) return next(err)
+            if (!err) {
+
+                res.json({
+                    'response': "Removed Sucessfully"
+                });
+            }
+            else {
+                res.json({
+                    'response': "Error"
+                });
+            }
+        })
     }
 ]
 
