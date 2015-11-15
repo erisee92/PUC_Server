@@ -26,7 +26,7 @@ controller.create = [
             if (len === 0) {
                 newuser.save(function(err) {
 
-                    res.JSON({
+                    res.json({
                         'response': "Sucessfully Registered"
                     })
                     if (err) return next(err)
@@ -34,7 +34,7 @@ controller.create = [
             }
             else {
 
-                res.JSON({
+                res.json({
                     'response': "User already Registered"
                 })
 
