@@ -3,8 +3,20 @@ var mongoose = require("mongoose"),
     controller = {}
 
 controller.index = [
-    function(req, res) {
-        res.end("PlaceHolder")
+    function(req, res, next) {
+        User.find(function(err, users) {
+            if (err) return next(err);
+            var len = users.length
+
+            if (len === 0) {
+                res.json({
+                    'response': "No Users Registered"
+                })
+            }
+            else {
+                res.json(users)
+            }
+        })
     }
 ]
 
@@ -20,29 +32,23 @@ controller.create = [
         User.find({
             username: req.body.username
         }, function(err, users) {
-
+            if (err) return next(err)
             var len = users.length
 
             if (len === 0) {
                 newuser.save(function(err) {
-
+                    if (err) return next(err)
                     res.json({
                         'response': "Sucessfully Registered"
                     })
-                    if (err) return next(err)
                 })
             }
             else {
-
                 res.json({
                     'response': "User already Registered"
                 })
-
             }
-
-            if (err) return next(err)
         })
-
     }
 ]
 controller.update = [
