@@ -3,9 +3,8 @@ var mongoose = require("mongoose"),
     controller = {}
 
 controller.index = [
-    function(req, res, next) {
+    function(req, res) {
         User.find(function(err, users) {
-            if (err) return next(err);
             var len = users.length
 
             if (len === 0) {
@@ -21,7 +20,7 @@ controller.index = [
 ]
 
 controller.create = [
-    function(req, res, next) {
+    function(req, res) {
 
         var newuser = new User({
             name: req.body.name,
@@ -32,12 +31,10 @@ controller.create = [
         User.find({
             username: req.body.username
         }, function(err, users) {
-            if (err) return next(err)
             var len = users.length
 
             if (len === 0) {
                 newuser.save(function(err) {
-                    if (err) return next(err)
                     res.json({
                         'response': "Sucessfully Registered",
                         'id': newuser._id
@@ -58,12 +55,10 @@ controller.update = [
     }
 ]
 controller.delete = [
-    function(req, res, next) {
+    function(req, res) {
 
         User.remove({ _id: req.params.userId }, function(err, user) {
-            if (err) return next(err)
             if (!err) {
-
                 res.json({
                     'response': "Removed Sucessfully"
                 });

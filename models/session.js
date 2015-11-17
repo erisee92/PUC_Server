@@ -3,6 +3,10 @@ var mongoose = require("mongoose"),
     User = require("./user.js")
 
 var SessionSchema = new Schema({
+    name: {
+        type: String,
+        required: true
+    },
     notification_key: {
         type: String,
         required: true
