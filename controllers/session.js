@@ -29,7 +29,7 @@ controller.create = [
         if("name" in req.body && req.body.name !== '') {
             gcm.createGroup(req.body.name,user_id,function(response){
                 console.log(response)
-                var notification_key = response.notification_key
+                var notification_key = JSON.parse(response).notification_key
                 console.log(notification_key)
                 if(notification_key && notification_key !== ''){
                     var newsession = new Session({
@@ -72,51 +72,7 @@ controller.create = [
 ]
 controller.update = [
     function(req, res) {
-        var started = false
-        var user_id = req.body.user_id
-
-        if("name" in req.body && req.body.name !== '') {
-            gcm.createGroup(req.body.name,user_id,function(response){
-                console.log(response)
-                var notification_key = response.notification_key
-                console.log(notification_key)
-                if(notification_key && notification_key !== ''){
-                    var newsession = new Session({
-                        name: req.body.name,
-                        notification_key: notification_key,
-                        started: started
-                    })
-
-                    Session.find({
-                        name: req.body.name
-                    }, function(err, sessions) {
-                        var len = sessions.length
-
-                        if (len === 0) {
-                            newsession.save(function(err) {
-                                res.json({
-                                    'response': "Sucessfully Created",
-                                    'id': newsession._id
-                                })
-                            })
-                        }
-                        else {
-                            res.json({
-                                'response': "Session Name already in use"
-                            })
-                        }
-                    })
-                } else {
-                    res.json({
-                        'response': "Group creation error"
-                    })
-                }
-            })
-        } else {
-            res.json({
-                'response': "Please add a name"
-            })
-        }
+        res.end("PlaceHolder");
     }
 ]
 controller.delete = [

@@ -1,19 +1,21 @@
 var mongoose = require("mongoose"),
     Schema = mongoose.Schema,
-    User = require("./user.js")
+    user = require("./user.js")
 
 var SessionSchema = new Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     notification_key: {
         type: String,
         required: true
     },
     started: Boolean,
+    userCount: Number,
     unlocked: {
-        user_id: { type: Schema.Types.ObjectId, ref: 'Session' },
+        user_id: { type: Schema.Types.ObjectId, ref: 'user' },
         count: Number
     }
 })
