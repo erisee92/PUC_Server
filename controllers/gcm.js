@@ -64,3 +64,23 @@ exports.deleteFromGroup = function(group_name,notification_key,to_id,callback) {
 		}
 	 )
 }
+
+exports.sendMessage = function(notification_key,message,callback) {
+	console.log(notification_key, message)
+	request(
+		{ method: 'POST',
+		uri: 'https://gcm-http.googleapis.com/gcm/send',
+		headers: {
+		    'Content-Type': 'application/json',
+		    'Authorization':'key=AIzaSyCaImGQkp1hU7-tbjC7a_RNBXcF73IiEZ8'
+		},
+		body: JSON.stringify({
+			"to" : notification_key,
+			"data":{"message": message}
+		})
+		}, function (error, response, body) {
+			if (error) throw new Error(error)
+			callback(body)
+		}
+	 )
+}

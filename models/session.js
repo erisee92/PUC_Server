@@ -8,16 +8,12 @@ var SessionSchema = new Schema({
         required: true,
         unique: true
     },
+    passwort: String,
     notification_key: {
         type: String,
         required: true
     },
-    started: Boolean,
-    userCount: Number,
-    unlocked: {
-        user_id: { type: Schema.Types.ObjectId, ref: 'user' },
-        count: Number
-    }
+    started: Boolean
 })
 
 module.exports = mongoose.model('session', SessionSchema)

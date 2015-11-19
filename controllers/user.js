@@ -51,9 +51,10 @@ controller.create = [
     }
 ]
 controller.update = [
+    //TODO add User to GCM group
     function(req,res) {
         User.update({_id: req.params.userId}, {$set: {session_id : req.body.session_id}}, function(err, user) {
-            if (!err) {
+            if (!err && user) {
                 res.json({
                     'response': "Updated Sucessfully"
                 });

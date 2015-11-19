@@ -30,10 +30,10 @@ controller.create = [
             gcm.createGroup(req.body.name,user_id,function(response){
                 console.log(response)
                 var notification_key = JSON.parse(response).notification_key
-                console.log(notification_key)
                 if(notification_key && notification_key !== ''){
                     var newsession = new Session({
                         name: req.body.name,
+                        passwort: req.body.passwort,
                         notification_key: notification_key,
                         started: started
                     })
@@ -72,11 +72,34 @@ controller.create = [
 ]
 controller.update = [
     function(req, res) {
-        res.end("PlaceHolder");
+        Session.findById(req.params.sessionId, function(err,session){
+            var message = ""
+            if(req.body.started==="true"){
+                message = "Session started"
+            } else if(req.body.started==="false"){
+                message = "Session stopped"
+            }
+           gcm.sendMessage(session.notification_key, message, function(response){
+               console.log(response)
+               Session.update({_id: req.params.sessionId}, {$set: {started : req.body.started}}, function(err, session) {
+                    if (!err && session) {
+                        res.json({
+                            'response': message
+                        });
+                    }
+                    else {
+                        res.json({
+                            'response': "Error"
+                        });
+                    }
+                })
+           })
+        })
     }
 ]
 controller.delete = [
     function(req, res) {
+        //TODO Create Session Delete Function
         res.end("PlaceHolder");
     }
 ]
