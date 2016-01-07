@@ -1,41 +1,73 @@
 var mongoose = require("mongoose"),
     Session = require("../models/session.js"),
+    crypto = require("crypto"),
     gcm = require("./gcm.js"),
     controller = {}
+    
+function randomValueHex (len) {
+    return crypto.randomBytes(Math.ceil(len/2))
+        .toString('hex') // convert to hexadecimal format
+        .slice(0,len);   // return required number of characters
+}
 
 controller.index = [
     function(req, res) {
         console.log("start")
         Session.find(function(err, sessions) {
             var len = sessions.length
-
             if (len === 0) {
-                res.json({
+                res.json([{
                     'response': "No Groups Created"
-                })
+                }])
             }
             else {
-                res.json(sessions)
+                var output = [];
+                for(var i=0; i< len; i++){
+                    output[i]= {
+			            "name" : sessions[i].name,
+                		"admin": sessions[i].admin,
+                		"id": sessions[i]._id
+            		}
+                }
+                res.json(output)
             }
         })
     }
 ]
 
+controller.getSession = [
+    //TODO DO DA REAL SHIT!
+    function(req, res) {
+        var output={
+                      "name": "Party_Yo",
+                      "admin": "Erik",
+                      "id": "567090b852e708bb0ad1e15e",
+                      "users":[{"name":"Emil"},{"name":"Eckbert"},{"name":"hannes"}]
+                    }
+        res.json(output)
+    }
+]
+
 controller.create = [
     function(req, res) {
+        console.log("Session Create Process started");
         var started = false
-        var user_id = req.body.user_id
+        var reg_id = req.body.reg_id
+        var rand_id = randomValueHex(15)
 
         if("name" in req.body && req.body.name !== '') {
-            gcm.createGroup(req.body.name,user_id,function(response){
+            gcm.createGroup(rand_id,reg_id,function(response){
                 console.log(response)
                 var notification_key = JSON.parse(response).notification_key
+                console.log(notification_key)
                 if(notification_key && notification_key !== ''){
                     var newsession = new Session({
                         name: req.body.name,
-                        passwort: req.body.passwort,
+                        password: req.body.password,
+                        notification_key_name: rand_id,
                         notification_key: notification_key,
-                        started: started
+                        started: started,
+                        admin: req.body.admin
                     })
 
                     Session.find({
@@ -70,7 +102,7 @@ controller.create = [
         }
     }
 ]
-controller.update = [
+controller.changeSessionState = [
     function(req, res) {
         Session.findById(req.params.sessionId, function(err,session){
             var message = ""
@@ -103,5 +135,28 @@ controller.delete = [
         res.end("PlaceHolder");
     }
 ]
+controller.addNewUser = [
+    function(req,res) {
+        Session.update({_id: req.params.userId}, {$push: {"users": {name : req.body.name}}}, function(err, session) {
+            if (!err && session) {
+                res.json({
+                    'response': "Updated Sucessfully"
+                })
+            }
+            else {
+                res.json({
+                    'response': "Error"
+                });
+            }
+        })
+    }
+]
+controller.deleteUser = [
+    function(req, res) {
+        //TODO Update Group to delete User
+        res.end("PlaceHolder");
+    }
+]
+
 
 module.exports = controller
