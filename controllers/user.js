@@ -57,13 +57,24 @@ controller.create = [
 ]
 controller.update = [
     function(req,res) {
-        User.update({_id: req.params.userId}, {$set: {session_id : req.body.session_id}}, function(err, user) {
+        console.log(req.params)
+        console.log(req.body)
+        User.update({reg_id: req.params.userId}, {$set: {session_id : req.body.session_id}}, function(err, user) {
             if (!err && user) {
-                gcm.addToGroup(user.session_id.notification_key_name, user.session_id.notification_key,user.reg_id,function(response){
-                    console.log(response)
-                    res.json({
-                        'response': "Updated Sucessfully"
-                    });
+                User.findOne({_id: req.params.userId}).populate("session_id").exec(function(err,user2){
+                   if(!err && user2) {
+                        gcm.addToGroup(user2.session_id.notification_key_name, user2.session_id.notification_key,user2.reg_id,function(response){
+                            console.log(response)
+                            res.json({
+                                'response': "Updated Sucessfully"
+                            });
+                        })
+                    } 
+                    else {
+                            res.json({
+                                'response': "Error"
+                            });
+                    }
                 })
             }
             else {

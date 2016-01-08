@@ -67,7 +67,7 @@ exports.deleteFromGroup = function(notification_key_name,notification_key,to_id,
 	 )
 }
 
-exports.sendMessage = function(notification_key,message,callback) {
+exports.sendMessage = function(notification_key,type,message,callback) {
 	console.log(notification_key, message)
 	request(
 		{ method: 'POST',
@@ -78,7 +78,9 @@ exports.sendMessage = function(notification_key,message,callback) {
 		},
 		body: JSON.stringify({
 			"to" : notification_key,
-			"data":{"message": message}
+			"data":{"msgType": type,
+					"body": message
+			}
 		})
 		}, function (error, response, body) {
 			if (error) throw new Error(error)
