@@ -24,6 +24,7 @@ exports.createGroup = function(notification_key_name,to_id,callback) {
 }
 
 exports.addToGroup = function(notification_key_name,notification_key,to_id,callback) {
+	console.log("add "+to_id+" to "+notification_key_name+" with key "+notification_key)
 	request(
 		{ method: 'POST',
 		uri: 'https://android.googleapis.com/gcm/notification',
@@ -39,13 +40,14 @@ exports.addToGroup = function(notification_key_name,notification_key,to_id,callb
 			"registration_ids" : [to_id]
 		})
 		}, function (error, response, body) {
+			if (error) throw new Error(error)
 			callback(body)
 		}
 	 )
 }
 
 exports.deleteFromGroup = function(notification_key_name,notification_key,to_id,callback) {
-	console.log(notification_key_name, notification_key, to_id)
+	console.log("delete "+to_id+" from "+notification_key_name+" with key "+notification_key)
 	request(
 		{ method: 'POST',
 		uri: 'https://android.googleapis.com/gcm/notification',

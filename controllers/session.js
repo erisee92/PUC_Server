@@ -162,14 +162,26 @@ controller.delete = [
 ]
 controller.addNewUser = [
     function(req,res) {
+        var reg_id = req.body.reg_id
         Session.findById(req.params.sessionId, function(err,sessionPW){
             if(!err && sessionPW){
                 if(sessionPW.password===req.body.password){
                    Session.update({_id: req.params.sessionId}, {$push: {"users": {name : req.body.name}}}, function(err, session) {
                         if (!err && session) {
-                            res.json({
-                                'response': "Updated Sucessfully"
-                            })
+                            var id = String(req.params.sessionId)
+                            console.log(id)
+                            request(
+                        		{ method: 'PUT',
+                        		uri: 'https://test-erik-boege.c9.io/users/'+reg_id,
+                        		form:{"session_id" : id}
+                        		}, function (error, response, body) {
+                        			if(!error){
+                        			    res.json({
+                                            'response': "Updated Sucessfully"
+                                        })
+                        			}
+                        	    }
+                        	 )
                         }
                         else {
                             res.json({
