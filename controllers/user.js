@@ -106,6 +106,10 @@ controller.delete = [
                                     });
                                 }
                             })
+                        } else {
+                            res.json({
+                                'response': "GCM Error but removed"
+                            });
                         }
                     })
                 } else {
@@ -121,6 +125,46 @@ controller.delete = [
                             });
                         }
                     })
+                }
+            } else {
+                res.json({
+                    'response':'User not registered'
+                })
+            }
+        })
+    }
+]
+controller.deleteSession = [
+    function(req, res) {
+        User.findOne({username: req.params.username}).populate("session_id").exec(function(err,user){
+            if(!err && user) {
+                console.log("start Session deletion")
+                if(user.session_id){
+                    gcm.deleteFromGroup(user.session_id.notification_key_name,user.session_id.notification_key,user.reg_id,function(response){
+                        console.log(response)
+                        if(JSON.parse(response).notification_key){
+                            User.update({ username: req.params.username }, {$unset: {'session_id' : ""}}, function(err, user) {
+                                if (!err) {
+                                    res.json({
+                                        'response': "Removed Sucessfully"
+                                    });
+                                }
+                                else {
+                                    res.json({
+                                        'response': "Error"
+                                    });
+                                }
+                            })
+                        } else {
+                            res.json({
+                                'response': "GCM Error but removed"
+                            });
+                        }
+                    })
+                } else {
+                    res.json({
+                        'response': "Error"
+                    });
                 }
             } else {
                 res.json({

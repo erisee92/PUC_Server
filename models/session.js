@@ -23,7 +23,18 @@ var SessionSchema = new Schema({
         required: true    
     },
     users: [{
-        name: String
+            name: {
+            type: String,
+            required: true    
+        },
+            username: {
+            type: String,
+            required: true    
+        },
+        unlocks: {
+            type: String,
+            default: "0"
+        }
     }]
 })
 

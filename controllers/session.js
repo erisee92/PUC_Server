@@ -27,7 +27,8 @@ controller.index = [
                     output[i]= {
 			            "name" : sessions[i].name,
                 		"admin": sessions[i].admin,
-                		"id": sessions[i]._id
+                		"id": sessions[i]._id,
+                		"state": sessions[i].started
             		}
                 }
                 res.json(output)
@@ -129,35 +130,67 @@ controller.create = [
 ]
 controller.changeSessionState = [
     function(req, res) {
+        console.log(req.body.started)
         Session.findById(req.params.sessionId, function(err,session){
-            var message = ""
-            if(req.body.started==="true"){
-                message = "Session started"
-            } else if(req.body.started==="false"){
-                message = "Session stopped"
-            }
-           gcm.sendMessage(session.notification_key, "Session",message, function(response){
-               console.log(response)
-               Session.update({_id: req.params.sessionId}, {$set: {started : req.body.started}}, function(err, session) {
-                    if (!err && session) {
-                        res.json({
-                            'response': message
-                        });
-                    }
-                    else {
-                        res.json({
-                            'response': "Error"
-                        });
-                    }
-                })
-           })
+            if (!err && session) {
+                var type = ""
+                var head = ""
+                var body = ""
+                if(req.body.started==="true"){
+                    type = "started"
+                    head = "Started!"
+                    body =  "Don't use your Phone ;)"
+                } else if(req.body.started==="false"){
+                    type = "stopped"
+                    head = "Stopped!"
+                    body =  "You can use your Phone now \\o/"
+                }
+               gcm.sendMessage(session.notification_key, type, head, body, function(response){
+                   console.log(response)
+                   Session.update({_id: req.params.sessionId}, {$set: {started : req.body.started}}, function(err, session) {
+                        if (!err && session) {
+                            res.json({
+                                'response': type
+                            });
+                        }
+                        else {
+                            res.json({
+                                'response': "Error"
+                            });
+                        }
+                    })
+               })
+            }else{
+                res.json({
+                    'response': "Error"
+                }); 
+            }   
         })
     }
 ]
 controller.delete = [
     function(req, res) {
-        //TODO Create Session Delete Function
-        res.end("PlaceHolder");
+        Session.findOne({_id: req.params.sessionId}).exec(function(err,session){
+            if(!err && session) {
+                console.log("start deletion")
+                    Session.remove({ _id: req.params.sessionId }, function(err, session) {
+                        if (!err) {
+                            res.json({
+                                'response': "Removed Sucessfully"
+                            });
+                        }
+                        else {
+                            res.json({
+                                'response': "Error"
+                            });
+                        }
+                    })
+            } else {
+                res.json({
+                    'response':'Session not registered'
+                })
+            }
+        })
     }
 ]
 controller.addNewUser = [
@@ -166,7 +199,7 @@ controller.addNewUser = [
         Session.findById(req.params.sessionId, function(err,sessionPW){
             if(!err && sessionPW){
                 if(sessionPW.password===req.body.password){
-                   Session.update({_id: req.params.sessionId}, {$push: {"users": {name : req.body.name}}}, function(err, session) {
+                   Session.update({_id: req.params.sessionId}, {$push: {"users": {name : req.body.name, username : req.body.username}}}, function(err, session) {
                         if (!err && session) {
                             var id = String(req.params.sessionId)
                             console.log(id)
@@ -204,8 +237,82 @@ controller.addNewUser = [
 ]
 controller.deleteUser = [
     function(req, res) {
-        //TODO Update Group to delete User
-        res.end("PlaceHolder");
+        var username = req.params.username
+        Session.findById(req.params.sessionId, function(err,session){
+            if(!err && session){
+                Session.findOne({'users.username' : username}, function (err,sessionU) {
+                    if(!err && sessionU){
+                        console.log("Send Request: Delete Session from user")
+                        request(
+                        		{ method: 'DELETE',
+                        		uri: 'https://test-erik-boege.c9.io/users/'+username+"/session"
+                        		}, function (error, response, body) {
+                        		    console.log(body)
+                        		    console.log(sessionU)
+                        			if(!error){
+                        			    Session.findOneAndUpdate({_id: sessionU.id}, {$pull: {users: {'username' : username}}}, function(err, sessionUp) {
+                        			        console.log(err)
+                        			        console.log(sessionUp)
+                                            if(!err && sessionUp){
+                                                res.json({
+                                                    'response' : 'Updated'
+                                                })
+                                            } else {
+                                                res.json({
+                                                    'response': "Error"
+                                                })
+                                            }
+                                        })
+                        			    
+                        			}
+                        	    }
+                        	 )
+                    } else {
+                         res.json({
+                            'response' : 'User in Session not found'
+                        })
+                    }
+                })
+            } else {
+                res.json({
+                    'response' : 'Session not found'
+                })
+            }
+        })
+    }
+]
+
+controller.updateUser = [
+    function(req, res) {
+        var username = req.params.username
+        Session.findById(req.params.sessionId, function(err,session){
+            if(!err && session){
+                Session.findOne({'users.username' : username}, function (err,sessionU) {
+                    if(!err && sessionU){
+                        console.log(sessionU)
+                        Session.update({_id: sessionU.id,'users.username' : username}, {$set: {"users.$.unlocks": req.body.unlocks}}, function(err, sessionUp) {
+                            if(!err && sessionUp){
+                                res.json({
+                                    'response' : 'Updated'
+                                })
+                            } else {
+                                res.json({
+                                    'response': "Error"
+                                })
+                            }
+                        })
+                    } else {
+                         res.json({
+                            'response' : 'User in Session not found'
+                        })
+                    }
+                })
+            } else {
+                res.json({
+                    'response' : 'Session not found'
+                })
+            }
+        })
     }
 ]
 

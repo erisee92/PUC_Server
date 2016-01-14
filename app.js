@@ -18,6 +18,7 @@ app.use(logger('dev'))
 app.get('/users',userController.index)
 app.post('/users',userController.create)
 app.put('/users/:userId',userController.update)
+app.delete('/users/:username/session',userController.deleteSession)
 app.delete('/users/:userId',userController.delete)
 
 app.get('/sessions',sessionController.index)
@@ -25,7 +26,8 @@ app.get('/sessions/:sessionId',sessionController.getSession)
 app.post('/sessions',sessionController.create)
 app.put('/sessions/:sessionId/state',sessionController.changeSessionState)
 app.put('/sessions/:sessionId/users',sessionController.addNewUser)
-app.delete('/sessions/:sessionId/users/:name',sessionController.deleteUser)
+app.put('/sessions/:sessionId/users/:username',sessionController.updateUser)
+app.delete('/sessions/:sessionId/users/:username',sessionController.deleteUser)
 app.delete('/sessions/:sessionId',sessionController.delete)
 
 app.use(function(req, res) {
