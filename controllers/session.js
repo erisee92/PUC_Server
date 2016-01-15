@@ -84,11 +84,10 @@ controller.create = [
                         notification_key_name: rand_id,
                         notification_key: notification_key,
                         started: started,
-                        admin: req.body.admin
+                        admin: req.body.admin,
+                        users: [{name: req.body.admin, username: req.body.adminusername}]
                     })
-                    Session.find({
-                        name: req.body.name
-                    }, function(err, sessions) {
+                    Session.find({name: req.body.name}, function(err, sessions) {
                         var len = sessions.length
 
                         if (len === 0) {
@@ -173,6 +172,10 @@ controller.delete = [
         Session.findOne({_id: req.params.sessionId}).exec(function(err,session){
             if(!err && session) {
                 console.log("start deletion")
+                console.log(session)
+                gcm.sendMessage(session.notification_key,"delete","Session removed","Session removed", function(response) {
+                    console.log(response)
+                })
                     Session.remove({ _id: req.params.sessionId }, function(err, session) {
                         if (!err) {
                             res.json({
