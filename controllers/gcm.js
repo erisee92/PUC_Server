@@ -1,5 +1,7 @@
+//Hier findet die gesammte Kommunikation mit dem Google Cloud Messaging (GCM) Service statt
 var request = require("request")
 
+//eine neue Gruppe beim GCM anlegen und Administrator hinzufügen
 exports.createGroup = function(notification_key_name,to_id,callback) {
 	console.log("start request")
 	console.log(notification_key_name)
@@ -23,6 +25,8 @@ exports.createGroup = function(notification_key_name,to_id,callback) {
 	 )
 }
 
+//Einen neuen Benutzer zu einer Gruppe hinzufügen
+//In einer Gruppe dürfen maximal 20 Geräte sein
 exports.addToGroup = function(notification_key_name,notification_key,to_id,callback) {
 	console.log("add "+to_id+" to "+notification_key_name+" with key "+notification_key)
 	request(
@@ -46,6 +50,7 @@ exports.addToGroup = function(notification_key_name,notification_key,to_id,callb
 	 )
 }
 
+//Einen Benutzer von einer Gruppe entfernen
 exports.deleteFromGroup = function(notification_key_name,notification_key,to_id,callback) {
 	console.log("delete "+to_id+" from "+notification_key_name+" with key "+notification_key)
 	request(
@@ -69,6 +74,7 @@ exports.deleteFromGroup = function(notification_key_name,notification_key,to_id,
 	 )
 }
 
+//eine Nachricht an eine bestimmte Gruppe senden
 exports.sendMessage = function(notification_key,type,head,body,callback) {
 	console.log("Send Message to "+notification_key, type, head, body)
 	request(

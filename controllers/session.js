@@ -7,10 +7,11 @@ var mongoose = require("mongoose"),
     
 function randomValueHex (len) {
     return crypto.randomBytes(Math.ceil(len/2))
-        .toString('hex') // convert to hexadecimal format
-        .slice(0,len);   // return required number of characters
+        .toString('hex') // umwandels ins Hexadezimale
+        .slice(0,len);   //rückgabe der geforderten anzahl an stellen
 }
 
+//Sessions in der DB auflisten
 controller.index = [
     function(req, res) {
         console.log("start")
@@ -37,13 +38,7 @@ controller.index = [
     }
 ]
 
-// controller.index = [
-//     function(req, res) {
-//                 res.json([{}])
-
-//     }
-// ]
-
+//eine bestimmte Session holen
 controller.getSession = [
     function(req, res) {
         Session.findById(req.params.sessionId, function(err,session){
@@ -65,6 +60,7 @@ controller.getSession = [
     }
 ]
 
+//eine neue Session anlegen
 controller.create = [
     function(req, res) {
         console.log("Session Create Process started");
@@ -127,6 +123,8 @@ controller.create = [
         }
     }
 ]
+
+//Session Status ändern. Überwachung starten bzw. stoppen
 controller.changeSessionState = [
     function(req, res) {
         console.log(req.body.started)
@@ -167,6 +165,8 @@ controller.changeSessionState = [
         })
     }
 ]
+
+//eine bestimmte Session löschen
 controller.delete = [
     function(req, res) {
         Session.findOne({_id: req.params.sessionId}).exec(function(err,session){
@@ -196,6 +196,8 @@ controller.delete = [
         })
     }
 ]
+
+//ein User tritt einer bestimmten Session bei
 controller.addNewUser = [
     function(req,res) {
         var reg_id = req.body.reg_id
@@ -206,6 +208,7 @@ controller.addNewUser = [
                         if (!err && session) {
                             var id = String(req.params.sessionId)
                             console.log(id)
+                            //Server stellt anfrage an sich selbst, damit die SessionID auch dem Benutzer mitgeteilt wird
                             request(
                         		{ method: 'PUT',
                         		uri: 'https://test-erik-boege.c9.io/users/'+reg_id,
@@ -238,6 +241,8 @@ controller.addNewUser = [
         })
     }
 ]
+
+//einen bestimmten Benutzer aus einer bestimmten Session entfernen
 controller.deleteUser = [
     function(req, res) {
         var username = req.params.username
@@ -246,6 +251,7 @@ controller.deleteUser = [
                 Session.findOne({'users.username' : username}, function (err,sessionU) {
                     if(!err && sessionU){
                         console.log("Send Request: Delete Session from user")
+                        //Server stellt anfrage an sich selbst, damit die SessionID auch vom Benutzer gelöscht wird
                         request(
                         		{ method: 'DELETE',
                         		uri: 'https://test-erik-boege.c9.io/users/'+username+"/session"
@@ -285,6 +291,7 @@ controller.deleteUser = [
     }
 ]
 
+//Ändern der Anzahl an Entsperrungen eines bestimmten Users
 controller.updateUser = [
     function(req, res) {
         var username = req.params.username
@@ -318,6 +325,5 @@ controller.updateUser = [
         })
     }
 ]
-
 
 module.exports = controller

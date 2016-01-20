@@ -1,3 +1,4 @@
+//das Schema einer Session (Gruppe) für die Datenbank
 var mongoose = require("mongoose"),
     Schema = mongoose.Schema,
     user = require("./user.js")

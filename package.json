@@ -1,6 +1,6 @@
 {
-  "name": "application-name",
-  "version": "0.0.1",
+  "name": "PUC_Server",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node app.js"

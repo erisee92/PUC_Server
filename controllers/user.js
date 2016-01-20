@@ -3,6 +3,7 @@ var mongoose = require("mongoose"),
     gcm = require("./gcm.js"),
     controller = {}
 
+//alle Benutzer ausgeben. Wird in der App nicht verwendet
 controller.index = [
     function(req, res) {
         User.find(function(err, users) {
@@ -20,6 +21,7 @@ controller.index = [
     }
 ]
 
+//neuen Benutzer anlegen
 controller.create = [
     function(req, res) {
 
@@ -55,6 +57,8 @@ controller.create = [
         })
     }
 ]
+
+//SessionID bei einem Benutzer hinzufügen (Nutzer tritt Gruppe bei)
 controller.update = [
     function(req,res) {
         console.log(req.params)
@@ -85,6 +89,8 @@ controller.update = [
         })
     }
 ]
+
+//Benutzer löschen
 controller.delete = [
     function(req, res) {
         User.findOne({_id: req.params.userId}).populate("session_id").exec(function(err,user){
@@ -134,6 +140,8 @@ controller.delete = [
         })
     }
 ]
+
+//Benutzer aus einer Session entfernen
 controller.deleteSession = [
     function(req, res) {
         User.findOne({username: req.params.username}).populate("session_id").exec(function(err,user){
